@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.ViewModelProvider
@@ -16,8 +17,11 @@ import com.dicoding.courseschedule.R
 import com.dicoding.courseschedule.data.Course
 import com.dicoding.courseschedule.paging.CourseAdapter
 import com.dicoding.courseschedule.paging.CourseViewHolder
+import com.dicoding.courseschedule.ui.add.AddCourseActivity
+import com.dicoding.courseschedule.ui.detail.DetailActivity
 import com.dicoding.courseschedule.ui.setting.SettingsActivity
 import com.dicoding.courseschedule.util.SortType
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class ListActivity : AppCompatActivity() {
 
@@ -36,7 +40,10 @@ class ListActivity : AppCompatActivity() {
         val factory = ListViewModelFactory.createFactory(this)
         viewModel = ViewModelProvider(this, factory).get(ListViewModel::class.java)
 
-        setFabClick()
+        val fab: FloatingActionButton = findViewById(R.id.fab)
+        fab.setOnClickListener {
+            setFabClick()
+        }
         setUpRecycler()
         initAction()
         updateList()
@@ -50,6 +57,9 @@ class ListActivity : AppCompatActivity() {
 
     private fun onCourseClick(course: Course) {
         //TODO 8 : Intent and show detailed course
+        val detailActivity = Intent(this, DetailActivity::class.java)
+        detailActivity.putExtra(DetailActivity.COURSE_ID, course.id)
+        startActivity(detailActivity)
     }
 
     private fun initAction() {
@@ -69,6 +79,7 @@ class ListActivity : AppCompatActivity() {
 
     private fun setFabClick() {
         //TODO 9 : Create AddCourseActivity to set new course schedule
+        startActivity(Intent(this, AddCourseActivity::class.java))
     }
 
     //TODO 14 : Fixing bug : sort menu not show and course not deleted when list is swiped
@@ -99,6 +110,7 @@ class ListActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_sort -> {
+                showSortMenu()
                 true
             }
             R.id.action_settings -> {
@@ -129,7 +141,9 @@ class ListActivity : AppCompatActivity() {
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
             val course = (viewHolder as CourseViewHolder).getCourse()
-
+            val courseName = course.courseName
+            viewModel.delete(course)
+            Toast.makeText(this@ListActivity, "Schedule ${courseName} is deleted", Toast.LENGTH_SHORT).show()
         }
     }
 }
