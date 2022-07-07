@@ -26,8 +26,8 @@
             android:label="@string/title_activity_list"
             android:parentActivityName=".ui.home.HomeActivity"
             android:theme="@style/Theme.CourseSchedule.NoActionBar" />
-
-        <activity android:name=".ui.home.HomeActivity"
+        <activity
+            android:name=".ui.home.HomeActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
